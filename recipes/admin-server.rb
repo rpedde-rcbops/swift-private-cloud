@@ -120,10 +120,11 @@ template "/etc/swift/object-expirer.conf" do
 end
 
 # /etc/syslog-ng
-template "/etc/syslog-ng/conf.d/swift-ng.conf" do
-  source "admin/etc/syslog-ng/conf.d/swift-ng.conf.erb"
-  notifies :reload, "service[syslog-ng]", :delayed
-end
+resources("template[/etc/syslog-ng/syslog-ng.conf]").variables(
+  :remote_syslog => false,
+  :remote_syslog_ip => node["swift-private-cloud"]["swift_common"]["syslog_ip"],
+  :source => platform_family?("debian") ? "s_src" : "s_sys"
+)
 
 # git repo
 git_basedir = node["swift-private-cloud"]["versioning"]["repository_base"]

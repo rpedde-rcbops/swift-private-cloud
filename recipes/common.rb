@@ -40,7 +40,7 @@ directory "/var/lock/swift" do
 end
 
 # checks ring to make sure it's current
-# and updates it with the latest from the 
+# and updates it with the latest from the
 # ring master otherwise
 template "/etc/cron.d/swift_ring_check" do
   source "common/etc/cron.d/swift_ring_check.erb"
@@ -110,9 +110,12 @@ template "/etc/swift/mime.types" do
 end
 
 # /etc/syslog-ng
-template "/etc/syslog-ng/conf.d/swift-ng.conf" do
-  source "common/etc/syslog-ng/conf.d/swift-ng.conf.erb"
+# we have some conflation of commons -- this should be on
+# non-admin common, whatever that is.
+template "/etc/syslog-ng/syslog-ng.conf" do
+  source "common/etc/syslog-ng/syslog-ng.conf.erb"
   variables(
+    :remote_syslog => true,
     :remote_syslog_ip => node["swift-private-cloud"]["swift_common"]["syslog_ip"],
     :source => platform_family?("debian") ? "s_src" : "s_sys"
   )
